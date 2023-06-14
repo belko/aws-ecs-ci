@@ -4,13 +4,15 @@ phases:
   install:
     runtime-versions:
       dotnet: 6.0
-      
+
+  
   build:
     commands:
       - echo Build started on `date`
-      - dotnet build WebApi/WebApi.csproj
-
-artifacts:
-    files:
-      - '**/*'
+      - docker build -t ci.cd.testrepo -f WebApi/Dockerfile .
+  post_build:
+    commands:
+      - eval 'aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 482240068519.dkr.ecr.us-east-2.amazonaws.com'
+      - docker tag ci.cd.testrepo:latest 482240068519.dkr.ecr.us-east-2.amazonaws.com/ci.cd.testrepo:latest
+      - docker push 482240068519.dkr.ecr.us-east-2.amazonaws.com/ci.cd.testrepo:latest
       
