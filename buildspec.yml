@@ -1,18 +1,29 @@
 version: 0.2
+
+env:
+  variables:
+    AWS_DEFAULT_REGION: "us-east-2"
+    AWS_ACCOUNT_ID: "482240068519"
+    IMAGE_REPO_NAME: "ci.cd.testrepo"
+    IMAGE_TAG: "latest"
+    IMAGE_URI: "482240068519.dkr.ecr.us-east-2.amazonaws.com/ci.cd.testrepo:latest"
     
 phases:
   install:
     runtime-versions:
       dotnet: 6.0
 
-  
+  pre_build:
+   commands:
+    - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+
   build:
     commands:
       - echo Build started on `date`
-      - docker build -t ci.cd.testrepo -f WebApi/Dockerfile .
+      - docker build -t $IMAGE_REPO_NAME -f WebApi/Dockerfile .
+      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+
   post_build:
     commands:
-      - eval 'aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 482240068519.dkr.ecr.us-east-2.amazonaws.com'
-      - docker tag ci.cd.testrepo:latest 482240068519.dkr.ecr.us-east-2.amazonaws.com/ci.cd.testrepo:latest
-      - docker push 482240068519.dkr.ecr.us-east-2.amazonaws.com/ci.cd.testrepo:latest
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
       
