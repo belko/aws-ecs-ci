@@ -27,7 +27,7 @@ phases:
     commands:
       - echo Build started on `date`
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
-      - printf '[{"name":"exp-code-pipeline", "imageUri":"%s"}]' $IMAGE_URI > imagedefinitions.WebApi.json
+      - printf '[{"name":"webApi", "imageUri":"%s"}]' $IMAGE_URI > imagedefinitions.WebApi.json
   
 artifacts:
   files:
