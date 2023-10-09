@@ -20,13 +20,14 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - docker build -t $IMAGE_REPO_NAME -f WebApi/Dockerfile .
-      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $IMAGE_URI
+      - echo $IMAGE_URI
+      - echo IMAGE_URI
+      - echo $IMAGE_REPO_NAME:$IMAGE_TAG
+      - echo IMAGE_REPO_NAME:IMAGE_TAG
 
   post_build:
     commands:
       - echo Build started on `date`
-      - docker push $IMAGE_URI
       - printf '[{"name":"webApi", "imageUri":"%s"}]' $IMAGE_URI > imagedefinitions.WebApi.json
   
 artifacts:
