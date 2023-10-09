@@ -6,6 +6,7 @@ env:
     AWS_ACCOUNT_ID: "482240068519"
     IMAGE_REPO_NAME: "ci.cd.testrepo"
     IMAGE_TAG: "latest"
+    IMAGE_URI: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
     
 phases:
   install:
@@ -18,15 +19,14 @@ phases:
 
   build:
     commands:
-      - IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
       - echo Build started on `date`
       - docker build -t $IMAGE_REPO_NAME -f WebApi/Dockerfile .
-      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $IMAGE_URI
 
   post_build:
     commands:
       - echo Build started on `date`
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+      - docker push $IMAGE_URI
       - printf '[{"name":"webApi", "imageUri":"%s"}]' $IMAGE_URI > imagedefinitions.WebApi.json
   
 artifacts:
